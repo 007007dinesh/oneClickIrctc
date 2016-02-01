@@ -37,39 +37,63 @@ function eventFire(el, etype) {
     }
 }
 
-function bookIRCTCTicket() {
-    var dcPayBtn = document.querySelector('.paymentOption tr td[id=\'DEBIT_CARD\']');
-    if (dcPayBtn == null) {
+function bookIRCTCTicket(card_type) {
+    //var tabPayBtn = document.querySelector('.paymentOption tr td[id=\'DEBIT_CARD\']');
+    var tabPayBtn = document.querySelector('.paymentOption tr td[id=\''+card_type+'\']');
+    if (tabPayBtn == null) {
         E();
         return
     }
-    dcPayBtn.click();
-    var dcTable = "";
-    var dcTables = document.getElementsByClassName('selected-bank-list DEBIT_CARD')[0].childNodes;
-    for (i = 0; i < dcTables.length; i++) {
-        if (dcTables[i].nodeName == "TABLE") {
-            var dcTable = dcTables[i];
+    tabPayBtn.click();
+    var cardTable = "";
+    //var cardTables = document.getElementsByClassName('selected-bank-list DEBIT_CARD')[0].childNodes;
+    var cardTables = document.getElementsByClassName('selected-bank-list '+card_type)[0].childNodes;
+    for (i = 0; i < cardTables.length; i++) {
+        if (cardTables[i].nodeName == "TABLE") {
+            var cardTable = cardTables[i];
             break
         }
     }
-    var dcTableData = dcTable.getElementsByTagName('td');
+    var cardTableData = cardTable.getElementsByTagName('td');
     var bankInfo = {};
-    for (i = 0; i < dcTableData.length; i++) {
-        var row = dcTableData[i].innerHTML;
+    for (i = 0; i < cardTableData.length; i++) {
+        var row = cardTableData[i].innerHTML;
         var result = row.match(/value="(\d+)".*>(.*)/);
         if (result.length == 3) {
             bankInfo[result[1]] = result[2]
         }
     }
-    var s = document.getElementsByName('DEBIT_CARD');
+    //var s = document.getElementsByName('DEBIT_CARD');
+    var s = document.getElementsByName(card_type);
     for (i = 0; i < s.length; i++) {
         var bankId = s[i].value;
-        if (bankInfo[bankId] == "ICICI Bank") {
+        if (bankInfo[bankId].indexOf("ICICI")!=-1) {
             s[i].checked = true;
             s[i].onchange()
         }
     }
     eventFire(document.getElementById('validate'), 'click')
+}
+
+
+function fillICICICreditCardInfo() {
+	 document.getElementById('name').value = 'DINESH';
+	 var creditCrdRadio = document.getElementById('creditCrdRadio');
+	 creditCrdRadio.checked = true;
+	 creditCrdRadio.click();
+	 var RadioGroupCrd = document.getElementsByName('RadioGroupCrd')[0];
+	 RadioGroupCrd.checked=true;
+	 RadioGroupCrd.click();
+	 document.getElementsByName('CardNumCrd1')[0].value = '0000';
+    document.getElementsByName('CardNumCrd2')[0].value = '0000';
+    document.getElementsByName('CardNumCrd3')[0].value = '0000';
+    document.getElementsByName('CardNumCrd4')[0].value = '0000';
+    var expMon = document.getElementsByName('creditExpDtMon')[0];
+    expMon.value = '11';
+    var expYear = document.getElementsByName('creditExpDtYr')[0];
+    expYear.value = '2017';
+    document.getElementsByName('creditCVV')[0].value = '0000';
+	//document.getElementsByName('btnPay')[0].click();
 }
 
 function fillICICIDebitCardInfo() {
@@ -86,19 +110,22 @@ function fillICICIDebitCardInfo() {
     document.getElementsByName('CVVNum')[0].value = '000';
     document.getElementsByName('NameOnCard')[0].value = 'DINESH S';
     document.getElementsByName('ATMPIN')[0].value = '0000';
-    document.getElementsByName('btnPay')[0].click()
+    // document.getElementsByName('btnPay')[0].click();
 }
 
 function init() {
+	var card_type = 'CREDIT_CARD';
     var pageUrl = window.location.hostname;
     if (pageUrl.indexOf("irctc") != -1) {
-        bookIRCTCTicket()
+        bookIRCTCTicket(card_type);
     } else if (pageUrl.indexOf("icici") != -1) {
-        fillICICIDebitCardInfo()
+		if(card_type==="CREDIT_CARD") {
+			fillICICICreditCardInfo();
+		} else {
+			fillICICIDebitCardInfo()
+		}
     } else {
         alert("Not a valid page")
     }
 }
 init();
-
-
