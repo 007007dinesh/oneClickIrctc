@@ -37,7 +37,7 @@ function eventFire(el, etype) {
     }
 }
 
-function bookIRCTCTicket(card_type) {
+function fillIRCTCForm(card_type,pref_bank) {
     //var tabPayBtn = document.querySelector('.paymentOption tr td[id=\'DEBIT_CARD\']');
     var tabPayBtn = document.querySelector('.paymentOption tr td[id=\''+card_type+'\']');
     if (tabPayBtn == null) {
@@ -67,7 +67,7 @@ function bookIRCTCTicket(card_type) {
     var s = document.getElementsByName(card_type);
     for (i = 0; i < s.length; i++) {
         var bankId = s[i].value;
-        if (bankInfo[bankId].indexOf("ICICI")!=-1) {
+        if (bankInfo[bankId].indexOf(pref_bank)!=-1) {
             s[i].checked = true;
             s[i].onchange()
         }
@@ -112,19 +112,44 @@ function fillICICIDebitCardInfo() {
     document.getElementsByName('ATMPIN')[0].value = '0000';
     // document.getElementsByName('btnPay')[0].click();
 }
+function setOption(selectElement, value) {
+    var options = selectElement.options;
+    for (var i = 0, optionsLength = options.length; i < optionsLength; i++) {
+        if (options[i].value == value) {
+            selectElement.selectedIndex = i;
+            return true;
+        }
+    }
+    return false;
+}
 
+function fillSBIDebitCardInfo() {
+	document.getElementById('debitCardNumber').value = '000000000000';
+	setOption(document.getElementById('debiMonth'),'2');
+	setOption(document.getElementById('debiYear'),'2010');
+	document.getElementById('debitCardholderName').value = 'BRANCH MANAGER';
+	document.getElementById('cardPin').value = '0000';
+	var txtCaptcha = document.getElementById('passline');
+	txtCaptcha.scrollIntoView();
+	txtCaptcha.focus();
+	document.getElementById('proceed').click();
+	
+}
 function init() {
-	var card_type = 'CREDIT_CARD';
+	var card_type = 'DEBIT_CARD';
+	var pref_bank = 'State Bank';
     var pageUrl = window.location.hostname;
     if (pageUrl.indexOf("irctc") != -1) {
-        bookIRCTCTicket(card_type);
+        fillIRCTCForm(card_type,pref_bank);
     } else if (pageUrl.indexOf("icici") != -1) {
 		if(card_type==="CREDIT_CARD") {
 			fillICICICreditCardInfo();
 		} else {
 			fillICICIDebitCardInfo()
 		}
-    } else {
+    } else if (pageUrl.indexOf("fssnet") != -1) {
+		fillSBIDebitCardInfo();
+	} else {
         alert("Not a valid page")
     }
 }
