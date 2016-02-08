@@ -132,7 +132,7 @@ function fillSBIDebitCardInfo() {
 	var txtCaptcha = document.getElementById('passline');
 	txtCaptcha.scrollIntoView();
 	txtCaptcha.focus();
-	document.getElementById('proceed').click();
+	
 	
 }
 function init() {
