@@ -1,27 +1,27 @@
 //Reference : http://stackoverflow.com/questions/2705583/how-to-simulate-a-click-with-javascript/2706236#2706236
 //Thanks to 'Kooilnc'
 
-function E() {
+function E(passenger_info,mobile) {
     f0 = document.forms['addPassengerForm'] || document.forms['jpBook'];
-    if (f0['addPassengerForm:psdetail:0:psgnName']) f0['addPassengerForm:psdetail:0:psgnName'].value = 'Venkatasubramani';
-    dq = document.querySelector('input[size=\'16\'][id^=\'addPassengerForm:psdetail:0:\']');
-    if (dq) dq.value = 'Venkatasubramani';
-    if (f0['addPassengerForm:psdetail:0:psgnAge']) f0['addPassengerForm:psdetail:0:psgnAge'].value = '52';
-    if (f0['addPassengerForm:psdetail:0:psgnGender']) f0['addPassengerForm:psdetail:0:psgnGender'].value = 'M';
-    if (f0['addPassengerForm:psdetail:0:berthChoice']) f0['addPassengerForm:psdetail:0:berthChoice'].value = 'LB';
-    if (f0['addPassengerForm:psdetail:1:psgnName']) f0['addPassengerForm:psdetail:1:psgnName'].value = 'Parameswari';
-    dq = document.querySelector('input[size=\'16\'][id^=\'addPassengerForm:psdetail:1:\']');
-    if (dq) dq.value = 'Parameswari';
-    if (f0['addPassengerForm:psdetail:1:psgnAge']) f0['addPassengerForm:psdetail:1:psgnAge'].value = '50';
-    if (f0['addPassengerForm:psdetail:1:psgnGender']) f0['addPassengerForm:psdetail:1:psgnGender'].value = 'F';
-    if (f0['addPassengerForm:psdetail:1:berthChoice']) f0['addPassengerForm:psdetail:1:berthChoice'].value = 'LB';
-    if (f0['addPassengerForm:psdetail:2:psgnName']) f0['addPassengerForm:psdetail:2:psgnName'].value = 'Dinesh';
-    dq = document.querySelector('input[size=\'16\'][id^=\'addPassengerForm:psdetail:2:\']');
-    if (dq) dq.value = 'Dinesh';
-    if (f0['addPassengerForm:psdetail:2:psgnAge']) f0['addPassengerForm:psdetail:2:psgnAge'].value = '25';
-    if (f0['addPassengerForm:psdetail:2:psgnGender']) f0['addPassengerForm:psdetail:2:psgnGender'].value = 'M';
-    if (f0['addPassengerForm:psdetail:2:berthChoice']) f0['addPassengerForm:psdetail:2:berthChoice'].value = 'MB';
-    if (f0['addPassengerForm:mobileNo']) f0['addPassengerForm:mobileNo'].value = '0000000000';
+	
+	for (i=0;i<passenger_info.length;i++) {
+		var subPassengerInfo = passenger_info[i];
+		var name = subPassengerInfo[0];
+		var gender = subPassengerInfo[1];
+		var age = subPassengerInfo[2];
+		var berth = subPassengerInfo[3];
+		console.log('name - '+name);
+		console.log('gender- '+gender);
+		console.log('age - '+age);
+		console.log('berth - '+berth);
+		if (f0['addPassengerForm:psdetail:'+i+':psgnName']) f0['addPassengerForm:psdetail:'+i+':psgnName'].value = name;
+		dq = document.querySelector('input[size=\'16\'][id^=\'addPassengerForm:psdetail:'+i+':\']');
+		if (dq) dq.value = name;
+		if (f0['addPassengerForm:psdetail:'+i+':psgnAge']) f0['addPassengerForm:psdetail:'+i+':psgnAge'].value = age;
+		if (f0['addPassengerForm:psdetail:'+i+':psgnGender']) f0['addPassengerForm:psdetail:'+i+':psgnGender'].value = gender;
+		if (f0['addPassengerForm:psdetail:'+i+':berthChoice']) f0['addPassengerForm:psdetail:'+i+':berthChoice'].value = berth;
+	}
+    if (f0['addPassengerForm:mobileNo']) f0['addPassengerForm:mobileNo'].value = mobile;
     var txtCaptcha = document.getElementById('j_captcha');
     txtCaptcha.scrollIntoView();
     txtCaptcha.focus()
@@ -37,17 +37,17 @@ function eventFire(el, etype) {
     }
 }
 
-function fillIRCTCForm(card_type,pref_bank) {
-    //var tabPayBtn = document.querySelector('.paymentOption tr td[id=\'DEBIT_CARD\']');
-    var tabPayBtn = document.querySelector('.paymentOption tr td[id=\''+card_type+'\']');
+function fillIRCTCForm(passenger_info,mobile,card_type, pref_bank) {
+    var tabPayBtn = document.querySelector('.paymentOption tr td[id=\'' + card_type + '\']');
     if (tabPayBtn == null) {
-        E();
+		console.log('Filling the passenger information now...');
+        E(passenger_info, mobile);
         return
     }
+	console.log('Selecting the preferred bank now...');
     tabPayBtn.click();
     var cardTable = "";
-    //var cardTables = document.getElementsByClassName('selected-bank-list DEBIT_CARD')[0].childNodes;
-    var cardTables = document.getElementsByClassName('selected-bank-list '+card_type)[0].childNodes;
+    var cardTables = document.getElementsByClassName('selected-bank-list ' + card_type)[0].childNodes;
     for (i = 0; i < cardTables.length; i++) {
         if (cardTables[i].nodeName == "TABLE") {
             var cardTable = cardTables[i];
@@ -63,16 +63,17 @@ function fillIRCTCForm(card_type,pref_bank) {
             bankInfo[result[1]] = result[2]
         }
     }
-    //var s = document.getElementsByName('DEBIT_CARD');
+	
     var s = document.getElementsByName(card_type);
     for (i = 0; i < s.length; i++) {
         var bankId = s[i].value;
-        if (bankInfo[bankId].indexOf(pref_bank)!=-1) {
+        if (bankInfo[bankId].toLowerCase().indexOf(pref_bank.toLowerCase()) != -1) {
             s[i].checked = true;
-            s[i].onchange()
+            s[i].onchange();
+			break;
         }
     }
-    eventFire(document.getElementById('validate'), 'click')
+	eventFire(document.getElementById('validate'), 'click')
 }
 
 
@@ -135,22 +136,64 @@ function fillSBIDebitCardInfo() {
 	
 	
 }
-function init() {
-	var card_type = 'DEBIT_CARD';
-	var pref_bank = 'State Bank';
-    var pageUrl = window.location.hostname;
-    if (pageUrl.indexOf("irctc") != -1) {
-        fillIRCTCForm(card_type,pref_bank);
-    } else if (pageUrl.indexOf("icici") != -1) {
-		if(card_type==="CREDIT_CARD") {
-			fillICICICreditCardInfo();
-		} else {
-			fillICICIDebitCardInfo()
+function init(passenger_info, mobile, bank = 'sbi', card = 'debit') {
+	console.log('Initializing ...');
+	if (Object.prototype.toString.call(passenger_info) != '[object Array]') {
+		console.log('Passenger information should be an array');
+		alert('Passenger information should be an array');
+		return 'FAIL';
+	} 
+	
+	var pLen = passenger_info.length;
+	if (pLen==0) {
+		console.log('Please pass Passenger information');
+		alert('Please pass Passenger information');
+		return 'FAIL';
+	}
+	for (i = 0; i < pLen; i++) {
+		var subPassengerInfo = passenger_info[i]; 
+		if (Object.prototype.toString.call(subPassengerInfo) != '[object Array]') {
+			console.log('Sub passenger information should be an array');
+			alert('Sub passenger information should be an array');
+			return 'FAIL';
 		}
-    } else if (pageUrl.indexOf("fssnet") != -1) {
-		fillSBIDebitCardInfo();
+		var subPassengerInfoLen = subPassengerInfo.length;
+		if (subPassengerInfoLen!=4) {
+			console.log('Sub passenger information should be having a length of 4');
+			alert('Sub passenger information should be having a length of 4');
+			return 'FAIL';
+		}
+	}
+	console.log('Passengers : '+passenger_info);
+	bank = bank.toLowerCase();
+	card = card.toLowerCase();
+	var pref_bank = bank;
+	var card_type = '';
+	
+	if (card=='debit') {
+		var card_type = 'DEBIT_CARD';
 	} else {
-        alert("Not a valid page")
+		var card_type = 'CREDIT_CARD';
+	}
+	console.log('pref_bank : '+pref_bank);
+    console.log('card_type : '+card_type);
+    
+    var pageUrl = window.location.hostname;
+    if (pageUrl.indexOf('irctc') != -1) {
+        fillIRCTCForm(passenger_info,mobile,card_type, pref_bank)
+    } else if (pageUrl.indexOf('icici') != -1) {
+        if (card_type === 'CREDIT_CARD') {
+            fillICICICreditCardInfo()
+        } else {
+            fillICICIDebitCardInfo()
+        }
+    } else if (pageUrl.indexOf('fssnet') != -1) {
+        fillSBIDebitCardInfo()
+    } else {
+        alert('Not a valid page')
     }
 }
-init();
+
+//init([['Venkatasubramani', 'M',52,'LB'],['Parameswari', 'F',50,'LB']],0000000000,'icici','credit');
+//init([['Venkatasubramani', 'M',52,'LB'],['Parameswari', 'F',50,'LB']],0000000000); 
+//init([['Venkatasubramani', 'M',52,'LB'],['Parameswari', 'F',50,'LB']],0000000000,'icici','debit');
