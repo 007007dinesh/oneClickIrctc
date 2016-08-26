@@ -3,7 +3,6 @@
 
 function E(passenger_info,mobile) {
     f0 = document.forms['addPassengerForm'] || document.forms['jpBook'];
-	
 	for (i=0;i<passenger_info.length;i++) {
 		var subPassengerInfo = passenger_info[i];
 		var name = subPassengerInfo[0];
@@ -26,7 +25,6 @@ function E(passenger_info,mobile) {
     txtCaptcha.scrollIntoView();
     txtCaptcha.focus()
 }
-
 function eventFire(el, etype) {
     if (el.fireEvent) {
         el.fireEvent('on' + etype)
@@ -36,7 +34,6 @@ function eventFire(el, etype) {
         el.dispatchEvent(evObj)
     }
 }
-
 function fillIRCTCForm(passenger_info,mobile,card_type, pref_bank) {
     var tabPayBtn = document.querySelector('.paymentOption tr td[id=\'' + card_type + '\']');
     if (tabPayBtn == null) {
@@ -63,7 +60,6 @@ function fillIRCTCForm(passenger_info,mobile,card_type, pref_bank) {
             bankInfo[result[1]] = result[2]
         }
     }
-	
     var s = document.getElementsByName(card_type);
     for (i = 0; i < s.length; i++) {
         var bankId = s[i].value;
@@ -73,10 +69,12 @@ function fillIRCTCForm(passenger_info,mobile,card_type, pref_bank) {
 			break;
         }
     }
-	eventFire(document.getElementById('validate'), 'click')
+	if (card_type == 'CREDIT_CARD') {
+            fillHDFCCreditCardInfo()
+    } else {
+		eventFire(document.getElementById('validate'), 'click')
+	}
 }
-
-
 function fillICICICreditCardInfo() {
 	 document.getElementById('name').value = 'DINESH';
 	 var creditCrdRadio = document.getElementById('creditCrdRadio');
@@ -96,7 +94,6 @@ function fillICICICreditCardInfo() {
     document.getElementsByName('creditCVV')[0].value = '0000';
 	//document.getElementsByName('btnPay')[0].click();
 }
-
 function fillICICIDebitCardInfo() {
     var cardType = document.getElementsByName('CardTypeSelectBox')[0];
     cardType.selectedIndex = 2;
@@ -116,14 +113,13 @@ function fillICICIDebitCardInfo() {
 function setOption(selectElement, value) {
     var options = selectElement.options;
     for (var i = 0, optionsLength = options.length; i < optionsLength; i++) {
-        if (options[i].value == value) {
+        if (options[i].text == value) {
             selectElement.selectedIndex = i;
             return true;
         }
     }
     return false;
 }
-
 function fillSBIDebitCardInfo() {
 	document.getElementById('debitCardNumber').value = '000000000000';
 	setOption(document.getElementById('debiMonth'),'2');
@@ -133,8 +129,21 @@ function fillSBIDebitCardInfo() {
 	var txtCaptcha = document.getElementById('passline');
 	txtCaptcha.scrollIntoView();
 	txtCaptcha.focus();
-	
-	
+}
+function fillHDFCCreditCardInfo() {
+	setOption(document.getElementById('card_type_id'),'MASTER');
+	document.getElementById('card_no_id').value = '5241810100096916';
+	document.getElementById('card_expiry_mon_id').selectedIndex = 6;
+	document.getElementById('card_expiry_year_id').value = '2019';
+	document.getElementById('cvv_no_id').value = '551';
+	document.getElementById('card_name_id').value = 'SATEESH KARRI';
+	var txtCaptcha = document.getElementById('captcha_txt');
+	txtCaptcha.scrollIntoView();
+	txtCaptcha.focus();
+}
+function fillHDFCPassword() {
+	document.getElementById('txtPassword').value = '2019';
+	eventFire(document.getElementById('cmdSubmit'), 'click');
 }
 function init(passenger_info, mobile, bank = 'sbi', card = 'debit') {
 	console.log('Initializing ...');
@@ -143,7 +152,6 @@ function init(passenger_info, mobile, bank = 'sbi', card = 'debit') {
 		alert('Passenger information should be an array');
 		return 'FAIL';
 	} 
-	
 	var pLen = passenger_info.length;
 	if (pLen==0) {
 		console.log('Please pass Passenger information');
@@ -169,7 +177,6 @@ function init(passenger_info, mobile, bank = 'sbi', card = 'debit') {
 	card = card.toLowerCase();
 	var pref_bank = bank;
 	var card_type = '';
-	
 	if (card=='debit') {
 		var card_type = 'DEBIT_CARD';
 	} else {
@@ -177,7 +184,6 @@ function init(passenger_info, mobile, bank = 'sbi', card = 'debit') {
 	}
 	console.log('pref_bank : '+pref_bank);
     console.log('card_type : '+card_type);
-    
     var pageUrl = window.location.hostname;
     if (pageUrl.indexOf('irctc') != -1) {
         fillIRCTCForm(passenger_info,mobile,card_type, pref_bank)
@@ -189,7 +195,9 @@ function init(passenger_info, mobile, bank = 'sbi', card = 'debit') {
         }
     } else if (pageUrl.indexOf('fssnet') != -1) {
         fillSBIDebitCardInfo()
-    } else {
+    } else if (pageUrl.indexOf('hdfcbank') != -1) {
+        fillHDFCPassword()
+    }  else {
         alert('Not a valid page')
     }
 }
