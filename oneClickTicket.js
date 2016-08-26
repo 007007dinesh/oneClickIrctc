@@ -132,11 +132,11 @@ function fillSBIDebitCardInfo() {
 }
 function fillHDFCCreditCardInfo() {
 	setOption(document.getElementById('card_type_id'),'MASTER');
-	document.getElementById('card_no_id').value = '5241810100096916';
+	document.getElementById('card_no_id').value = '000000000000';
 	document.getElementById('card_expiry_mon_id').selectedIndex = 6;
 	document.getElementById('card_expiry_year_id').value = '2019';
-	document.getElementById('cvv_no_id').value = '551';
-	document.getElementById('card_name_id').value = 'SATEESH KARRI';
+	document.getElementById('cvv_no_id').value = '000';
+	document.getElementById('card_name_id').value = 'DINESH S';
 	var txtCaptcha = document.getElementById('captcha_txt');
 	txtCaptcha.scrollIntoView();
 	txtCaptcha.focus();
