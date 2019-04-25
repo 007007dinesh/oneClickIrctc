@@ -122,11 +122,11 @@ function setOption(selectElement, value) {
 }
 function fillSBIDebitCardInfo() {
 	document.getElementById('debitCardNumber').value = '000000000000';
-	setOption(document.getElementById('debiMonth'),'2');
-	setOption(document.getElementById('debiYear'),'2010');
+	setOption(document.getElementById('debitMonthSelect'),10);
+	setOption(document.getElementById('debitYearSelect'),2023);
 	document.getElementById('debitCardholderName').value = 'BRANCH MANAGER';
 	document.getElementById('cardPin').value = '0000';
-	var txtCaptcha = document.getElementById('passline');
+	var txtCaptcha = document.getElementsByName('passline')[0]
 	txtCaptcha.scrollIntoView();
 	txtCaptcha.focus();
 }
